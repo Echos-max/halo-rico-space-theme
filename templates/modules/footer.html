@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<footer th:fragment="footer" class="border-t border-gray-200 dark:border-darkBorder py-8 text-center text-sm text-gray-400 dark:text-gray-500 bg-[#f9f8f7] dark:bg-darkBg">
+    <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span> 
+       <span th:text="${site.title}">Rico Space</span>. 
+       Designed by Rico.
+    </p>
+</footer>
+
+</html>

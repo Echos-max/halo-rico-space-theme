@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN" 
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{modules/layout :: html(content = ~{::content})}">
+
+<th:block th:fragment="content">
+    <!-- 文章详情 -->
+    <article class="animate-fade-in">
+        <!-- 文章头部 -->
+        <header class="mb-8 md:mb-12">
+            <!-- 面包屑导航 -->
+            <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+                <a th:href="@{/}" class="hover:text-gray-900 dark:hover:text-white transition">
+                    <i class="ri-home-4-line"></i> 首页
+                </a>
+                <i class="ri-arrow-right-s-line text-xs"></i>
+                <a th:href="@{/archives}" class="hover:text-gray-900 dark:hover:text-white transition">文章</a>
+                <i class="ri-arrow-right-s-line text-xs"></i>
+                <span class="text-gray-400 dark:text-gray-500 truncate max-w-xs" th:text="${post.spec.title}">正文</span>
+            </nav>
+                        <!-- 封面图 -->
+            <div th:if="${post.spec.cover}" class="mt-8 rounded-2xl overflow-hidden shadow-lg">
+                <img th:src="${post.spec.cover}" 
+                     th:alt="${post.spec.title}"
+                     class="w-96 h-64 object-cover">
+            </div>
+            <!-- 文章标题 -->
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight" 
+                th:text="${post.spec.title}">
+                文章标题
+            </h1>
+
+            <!-- 文章元信息 -->
+            <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-500 dark:text-gray-400">
+                <!-- 作者 -->
+                <div class="flex items-center gap-2">
+                    <img th:if="${post.owner}" 
+                         th:src="${post.owner.avatar}" 
+                         th:alt="${post.owner.displayName}"
+                         class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-600 object-cover">
+                    <img th:unless="${post.owner}"
+                         src="https://api.dicebear.com/7.x/avataaars/svg?seed=Default" 
+                         alt="作者头像"
+                         class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-600">
+                    <span class="font-medium text-gray-700 dark:text-gray-300" 
+                          th:text="${post.owner?.displayName} ?: '匿名'">
+                        作者名称
+                    </span>
+                </div>
+
+                <!-- 发布时间 -->
+                <div class="flex items-center gap-1.5">
+                    <i class="ri-calendar-line"></i>
+                    <time th:datetime="${post.spec.publishTime}" 
+                          th:text="${#dates.format(post.spec.publishTime, 'yyyy年MM月dd日')}">
+                        2025年01月04日
+                    </time>
+                </div>
+
+                <!-- 分类 -->
+                <div th:if="${post.categories.size() > 0}" class="flex items-center gap-1.5">
+                    <i class="ri-folder-line"></i>
+                    <a th:each="category, iterStat : ${post.categories}" 
+                       th:href="@{${category.status.permalink}}"
+                       class="hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span th:text="${category.spec.displayName}">分类</span>
+                        <span th:if="${!iterStat.last}">, </span>
+                    </a>
+                </div>
+
+                <!-- 阅读量 -->
+                <div class="flex items-center gap-1.5">
+                    <i class="ri-eye-line"></i>
+                    <span th:text="${post.stats.visit} ?: 0">0</span> 阅读
+                </div>
+
+                <!-- 评论数 -->
+                <div th:if="${post.stats.comment > 0}" class="flex items-center gap-1.5">
+                    <i class="ri-chat-3-line"></i>
+                    <span th:text="${post.stats.comment}">0</span> 评论
+                </div>
+            </div>
+
+            <!-- 标签 -->
+            <div th:if="${post.tags.size() > 0}" class="flex flex-wrap items-center gap-2 mt-6">
+                <i class="ri-price-tag-3-line text-gray-400"></i>
+                <a th:each="tag : ${post.tags}" 
+                   th:href="@{${tag.status.permalink}}"
+                   class="px-3 py-1 bg-gray-100 dark:bg-darkCard rounded-full text-xs text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                   th:text="'#' + ${tag.spec.displayName}">
+                    #标签
+                </a>
+            </div>
+        </header>
+
+        <!-- 文章内容 -->
+        <div class="prose prose-lg dark:prose-invert max-w-none
+                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
+                    prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:my-4
+                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-bold
+                    prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
+                    prose-pre:bg-gray-900 dark:prose-pre:bg-black prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:shadow-lg
+                    prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8
+                    prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-900/20 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:my-6 prose-blockquote:not-italic
+                    prose-ul:my-4 prose-ol:my-4 prose-li:my-1
+                    prose-hr:border-gray-200 dark:prose-hr:border-gray-700 prose-hr:my-8
+                    prose-table:border-collapse prose-table:w-full
+                    prose-th:bg-gray-100 dark:prose-th:bg-gray-800 prose-th:p-3 prose-th:text-left
+                    prose-td:border prose-td:border-gray-200 dark:prose-td:border-gray-700 prose-td:p-3
+                    mb-12"
+             th:utext="${post.content.content}">
+            <p>文章内容加载中...</p>
+        </div>
+
+        <!-- 文章底部信息 -->
+        <footer class="border-t border-gray-200 dark:border-gray-700 pt-8 mb-12">
+            <!-- 版权声明 -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8">
+                <div class="flex items-start gap-3">
+                    <i class="ri-copyright-line text-blue-600 dark:text-blue-400 text-xl mt-0.5 flex-shrink-0"></i>
+                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                        <p class="font-medium mb-1">版权声明</p>
+                        <p>本文由 <span class="font-medium" th:text="${post.owner?.displayName} ?: '作者'">作者</span> 创作，采用 
+                            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" 
+                               class="text-blue-600 dark:text-blue-400 hover:underline">
+                                CC BY-NC-SA 4.0
+                            </a> 许可协议。
+                        </p>
+                        <p class="mt-2">
+                            本文链接：
+                            <a th:href="${post.status.permalink}" 
+                               th:text="${post.status.permalink}"
+                               class="text-blue-600 dark:text-blue-400 hover:underline break-all">
+                                文章链接
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分享按钮 -->
+            <div class="flex items-center justify-between flex-wrap gap-4 mb-8">
+                <div class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    <i class="ri-share-line"></i> 
+                    <span>分享文章</span>
+                </div>
+                <div class="flex gap-2">
+                    <!-- 微博分享 -->
+                    <a th:href="'https://service.weibo.com/share/share.php?url=' + ${post.status.permalink} + '&title=' + ${post.spec.title}" 
+                       target="_blank"
+                       title="分享到微博"
+                       class="w-10 h-10 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-red-500 hover:text-white transition">
+                        <i class="ri-weibo-fill"></i>
+                    </a>
+                    <!-- QQ分享 -->
+                    <a th:href="'https://connect.qq.com/widget/shareqq/index.html?url=' + ${post.status.permalink} + '&title=' + ${post.spec.title}" 
+                       target="_blank"
+                       title="分享到QQ"
+                       class="w-10 h-10 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-blue-500 hover:text-white transition">
+                        <i class="ri-qq-fill"></i>
+                    </a>
+                    <!-- Twitter分享 -->
+                    <a th:href="'https://twitter.com/intent/tweet?url=' + ${post.status.permalink} + '&text=' + ${post.spec.title}" 
+                       target="_blank"
+                       title="分享到Twitter"
+                       class="w-10 h-10 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-sky-500 hover:text-white transition">
+                        <i class="ri-twitter-x-line"></i>
+                    </a>
+                    <!-- 复制链接 -->
+                    <button onclick="copyLink()" 
+                            title="复制链接"
+                            class="w-10 h-10 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-800 hover:text-white transition">
+                        <i class="ri-link"></i>
+                    </button>
+                </div>
+            </div>
+        </footer>
+
+        <!-- 上一篇/下一篇 -->
+        <nav th:if="${prevPost} or ${nextPost}" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            <!-- 上一篇 -->
+            <a th:if="${prevPost}" 
+               th:href="@{${prevPost.status.permalink}}"
+               class="group bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition">
+                <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-2">
+                    <i class="ri-arrow-left-line"></i>
+                    <span>上一篇</span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition line-clamp-2"
+                    th:text="${prevPost.spec.title}">
+                    上一篇文章标题
+                </h3>
+            </a>
+
+            <!-- 占位 -->
+            <div th:unless="${prevPost}"></div>
+
+            <!-- 下一篇 -->
+            <a th:if="${nextPost}" 
+               th:href="@{${nextPost.status.permalink}}"
+               class="group bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition text-right md:col-start-2">
+                <div class="flex items-center justify-end gap-3 text-sm text-gray-500 dark:text-gray-400 mb-2">
+                    <span>下一篇</span>
+                    <i class="ri-arrow-right-line"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition line-clamp-2"
+                    th:text="${nextPost.spec.title}">
+                    下一篇文章标题
+                </h3>
+            </a>
+        </nav>
+
+        <!-- 评论区 -->
+        <section class="bg-white dark:bg-darkCard rounded-2xl border border-gray-200 dark:border-gray-700 p-6 md:p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <i class="ri-chat-3-line"></i>
+                <span>评论</span>
+                <span class="text-base font-normal text-gray-400" th:if="${post.stats.comment > 0}">
+                    (<span th:text="${post.stats.comment}">0</span>)
+                </span>
+            </h2>
+            
+            <!-- Halo 评论组件 -->
+            <halo:comment 
+                group="content.halo.run"
+                kind="Post"
+                th:attr="name=${post.metadata.name}"
+            />
+        </section>
+    </article>
+
+    <!-- 复制链接脚本 -->
+    <script th:inline="javascript">
+        function copyLink() {
+            const url = /*[[${post.status.permalink}]]*/ window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('链接已复制到剪贴板！');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                showToast('复制失败，请手动复制');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full shadow-lg z-50 animate-fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+    </script>
+</th:block>
+</html>

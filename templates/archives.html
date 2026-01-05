@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN" 
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{modules/layout :: html(content = ~{::content})}">
+
+<th:block th:fragment="content">
+    <!-- 使用 postFinder 获取文章列表（如果 posts 不存在） -->
+    <th:block th:with="postList = ${posts != null ? posts : postFinder.list(1, 10)}">
+        
+    <section class="animate-fade-in">
+        <!-- 页面标题 -->
+        <div class="text-center mb-12 md:mb-16">
+            <h1 class="text-5xl md:text-6xl font-art text-gray-900 dark:text-white tracking-wider">文 章</h1>
+            <p class="text-gray-400 text-xs md:text-sm mt-4 tracking-widest uppercase mb-2">ARTICLES</p>
+            <p class="text-gray-400 text-xs font-mono">
+                分享技术见解与设计灵感 · 共 <span th:text="${postList.total}">0</span> 篇文章
+            </p>
+        </div>
+        
+        <!-- 文章列表 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <!-- 循环每篇文章 -->
+            <article th:each="post : ${postList.items}" 
+                     class="group  dark:bg-darkCard rounded-2xl overflow-hidden    transition-all duration-300">
+                
+                <!-- 整个卡片都是链接 -->
+                <a th:href="@{${post.status.permalink}}" class="block">
+                    
+                    <!-- 封面图区域 -->
+                    <div class="h-48 overflow-hidden relative bg-gradient-to-br from-blue-400 to-purple-500">
+                        <!-- 如果有封面图就显示 -->
+                        <img th:if="${post.spec.cover != null && post.spec.cover != ''}" 
+                             th:src="${post.spec.cover}" 
+                             th:alt="${post.spec.title}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        
+                        <!-- 如果没有封面图显示图标 -->
+                        <div th:unless="${post.spec.cover != null && post.spec.cover != ''}"
+                             class="w-full h-full flex items-center justify-center">
+                            <i class="ri-article-line text-6xl text-white opacity-80"></i>
+                        </div>
+                        
+                        <!-- 分类标签 -->
+                        <div th:if="${post.categories != null && post.categories.size() > 0}" 
+                             class="absolute top-3 left-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg z-10"
+                             th:text="${post.categories[0].spec.displayName}">
+                            分类
+                        </div>
+                    </div>
+                    
+                    <!-- 文章信息区域 -->
+                    <div class="p-6 bg-[#f9f8f7] dark:bg-darkCard">
+                        <!-- 发布时间 -->
+                        <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3 font-mono">
+                            <i class="ri-calendar-line"></i> 
+                            <time th:text="${#dates.format(post.spec.publishTime, 'yyyy-MM-dd')}">2025-01-04</time>
+                        </div>
+                        
+                        <!-- 文章标题 -->
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition line-clamp-2"
+                            th:text="${post.spec.title}">
+                            文章标题
+                        </h3>
+                        
+                        <!-- 文章摘要 -->
+                        <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 leading-relaxed mb-4"
+                           th:text="${post.status.excerpt != null && post.status.excerpt != ''} ? ${post.status.excerpt} : '暂无摘要'">
+                            文章摘要内容...
+                        </p>
+                        
+                        <!-- 底部统计信息 -->
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                <!-- 阅读量 -->
+                                <span class="flex items-center gap-1">
+                                    <i class="ri-eye-line"></i>
+                                    <span th:text="${post.stats.visit != null ? post.stats.visit : 0}">0</span>
+                                </span>
+                                
+                                <!-- 评论数 -->
+                                <span th:if="${post.stats.comment != null && post.stats.comment > 0}" class="flex items-center gap-1">
+                                    <i class="ri-chat-3-line"></i>
+                                    <span th:text="${post.stats.comment}">0</span>
+                                </span>
+                            </div>
+                            
+                            <!-- 箭头图标 -->
+                            <i class="ri-arrow-right-line text-lg text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+                </a>
+            </article>
+        </div>
+
+        <!-- 如果没有文章显示这个 -->
+        <div th:if="${postList.total == 0}" class="text-center py-20">
+            <i class="ri-article-line text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <p class="text-gray-400 dark:text-gray-500 text-lg">暂无文章</p>
+            <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">快去后台发布第一篇文章吧！</p>
+        </div>
+
+        <!-- 分页 -->
+        <div th:if="${postList.total > postList.size}" class="mt-12 flex justify-center">
+            <nav class="flex items-center gap-2">
+                <!-- 上一页按钮 -->
+                <a th:if="${postList.hasPrevious}" 
+                   th:href="@{/archives(page=${postList.page - 1})}"
+                   class="px-4 py-2 bg-white dark:bg-darkCard rounded-lg border border-gray-200 dark:border-darkBorder hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-1">
+                    <i class="ri-arrow-left-s-line"></i>
+                    <span>上一页</span>
+                </a>
+                
+                <!-- 页码 -->
+                <div class="flex items-center gap-2 px-4">
+                    <span class="px-3 py-1 bg-blue-600 text-white rounded-lg font-medium" 
+                          th:text="${postList.page}">1</span>
+                    <span class="text-gray-400">/</span>
+                    <span class="text-gray-600 dark:text-gray-400" 
+                          th:text="${postList.pages}">1</span>
+                </div>
+                
+                <!-- 下一页按钮 -->
+                <a th:if="${postList.hasNext}" 
+                   th:href="@{/archives(page=${postList.page + 1})}"
+                   class="px-4 py-2 bg-white dark:bg-darkCard rounded-lg border border-gray-200 dark:border-darkBorder hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center gap-1">
+                    <span>下一页</span>
+                    <i class="ri-arrow-right-s-line"></i>
+                </a>
+            </nav>
+        </div>
+    </section>
+    
+    </th:block>
+</th:block>
+</html>

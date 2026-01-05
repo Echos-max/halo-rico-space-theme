@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<header th:fragment="header" class="fixed top-0 left-0 w-full z-50 pointer-events-none">
+    <div class="max-w-7xl mx-auto px-6 h-20 md:h-24 flex items-center justify-between relative">
+        <!-- 桌面端菜单 -->
+        <nav th:with="menu = ${menuFinder.getPrimary()}" 
+             class="hidden md:flex pointer-events-auto absolute left-1/2 top-6 -translate-x-1/2 bg-white/80 dark:bg-darkCard/80 backdrop-blur-xl border border-white/40 dark:border-gray-700 shadow-lg shadow-gray-200/40 dark:shadow-black/20 rounded-full px-8 py-3 items-center gap-6 transition-all hover:shadow-xl hover:-translate-y-0.5">
+            
+            <a th:each="menuItem : ${menu.menuItems}"
+               th:href="@{${menuItem.status.href}}"
+               class="nav-item group relative flex items-center gap-1.5 text-sm transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
+                
+                <!-- 简单的图标，可以后续通过菜单项的自定义字段来指定 -->
+                <i class="ri-menu-line text-lg"></i>
+                
+                <span th:text="${menuItem.status.displayName}">菜单</span>
+                
+                <!-- 激活小圆点 -->
+                <span class="nav-dot absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-black dark:bg-white rounded-full opacity-0 transition-opacity duration-200"></span>
+            </a>
+        </nav>
+
+        <!-- 右侧功能区 -->
+        <div class="pointer-events-auto flex items-center gap-3 md:gap-4 absolute right-6 top-5 md:top-6">
+            <button class="w-9 h-9 md:w-10 md:h-10dark:bg-darkCard rounded-full  dark:border-darkBorder flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition">
+                <i class="ri-search-line"></i>
+            </button>
+            <button onclick="toggleDarkMode()" class="w-9 h-9 md:w-10 md:h-10  rounded-full dark:border-darkBorder flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition">
+                <i class="ri-moon-line dark:hidden"></i>
+                <i class="ri-sun-line hidden dark:block"></i>
+            </button>
+            <div class="w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden  dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rico" 
+                     alt="Avatar" 
+                     class="w-full h-full object-cover bg-gray-100">
+            </div>
+        </div>
+    </div>
+</header>
+
+</html>

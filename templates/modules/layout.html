@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN" 
+      xmlns:th="http://www.thymeleaf.org"
+      th:fragment="html(content)"
+      class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${site.title} + ' | 探索无限'">Rico's Space | 探索无限</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" th:href="@{/assets/dist/style.css?v={version}(version=${theme.spec.version})}">
+    <script th:src="@{/assets/dist/main.iife.js?v={version}(version=${theme.spec.version})}"></script>
+<!-- Prism.js 代码高亮 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'Songti SC', 'serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+                        art: ['"ZCOOL QingKe HuangYou"', 'cursive'],
+                    },
+                    colors: {
+                        nickname: '#576b95',
+                        darkBg: '#0f172a',
+                        darkCard: '#1e293b',
+                        darkBorder: '#334155'
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .grid-gallery-4 { grid-template-columns: repeat(2, 1fr); width: 100%; max-width: 66%; }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col bg-[#f9f8f7] font-sans selection:bg-black selection:text-white dark:selection:bg-blue-500 dark:bg-darkBg dark:text-gray-200 transition-colors duration-300">
+
+    <!-- 顶部导航 -->
+    <th:block th:replace="~{modules/header :: header}" />
+
+    <!-- 占位符 -->
+    <div class="h-20 md:h-32"></div>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow w-full max-w-6xl mx-auto px-4 md:px-6 pb-24 md:pb-20">
+        <th:block th:replace="${content}" />
+    </main>
+
+    <!-- 底部 -->
+    <th:block th:replace="~{modules/footer :: footer}" />
+
+    <!-- 移动端导航 -->
+    <th:block th:replace="~{modules/mobile-nav :: mobileNav}" />
+
+    <!-- 脚本 -->
+    <th:block th:replace="~{modules/scripts :: scripts}" />
+</body>
+</html>
