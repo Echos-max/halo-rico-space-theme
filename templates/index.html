@@ -8,47 +8,103 @@
     <section class="animate-fade-in flex flex-col-reverse md:flex-row items-center justify-between min-h-[60vh]">
         <div class="w-full md:w-1/2 space-y-6 md:space-y-8 mt-8 md:mt-0 z-10 text-center md:text-left">
             <div class="space-y-4">
+                <!-- 使用配置的标题 -->
                 <div class="flex items-baseline justify-center md:justify-start gap-2 md:gap-3 text-4xl md:text-6xl font-bold text-gray-900 dark:text-white">
-                    <span class="font-mono text-gray-400 dark:text-gray-600 text-2xl md:text-3xl">&lt;</span>
-                    <span class="font-art tracking-wide">开发者</span>
+                    <span class=" text-gray-400 dark:text-gray-600 text-2xl md:text-3xl">&lt;</span>
+                    
+                    <!-- titleLeft: 第一个文字 -->
+                    <span class="font-art tracking-wide" 
+                          th:text="${theme.config.HomeSettings.titleLeft} ?: '开发者'">
+                        开发者
+                    </span>
+                    
                     <span class="font-mono text-gray-400 dark:text-gray-600 text-2xl md:text-3xl">/&gt;</span>
                     <span class="text-xl md:text-2xl text-gray-300 font-light">,</span>
+                    
+                    <!-- subtitleLeft: 第二个文字 -->
                     <span class="relative inline-block">
-                        <span class="relative z-10 font-art tracking-wide">攻城狮</span>
-                        <span class="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-3 bg-yellow-200/60 dark:bg-yellow-600/60 -z-0"></span>
+                        <span class="relative z-10 font-art tracking-wide"
+                              th:text="${theme.config.HomeSettings.subtitleLeft} ?: '攻城狮'">
+                            攻城狮
+                        </span>
+                        <span class="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-3 bg-yellow-200/60 dark:bg-yellow-600/60 z-0"></span>
                     </span>
                 </div>
+                
+                <!-- titlebgLeft 和 titlebgRight -->
                 <div class="flex items-center justify-center md:justify-start gap-3 md:gap-4 text-2xl md:text-5xl text-gray-800 dark:text-gray-200">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1">
                         <i class="ri-magic-line text-xl md:text-2xl text-purple-500"></i>
-                        <span class="font-art">细节控</span>
+                        <span class="font-art" 
+                              th:text="${theme.config.HomeSettings.titlebgLeft} ?: '细节控'">
+                            细节控
+                        </span>
                     </div>
                     <span class="text-gray-300">,</span>
                     <div class="flex items-center gap-2">
                         <i class="ri-quill-pen-line text-xl md:text-2xl text-blue-500"></i>
-                        <span class="font-art">写博客</span>
+                        <span class="font-art"
+                              th:text="${theme.config.HomeSettings.titlebgRight} ?: '写博客'">
+                            写博客
+                        </span>
                     </div>
                 </div>
             </div>
-            <p class="text-gray-500 dark:text-gray-400 text-base md:text-xl max-w-md mx-auto md:mx-0 leading-relaxed font-sans">
+            
+            <!-- 个人简介 -->
+            <p class="text-gray-500 dark:text-gray-400 text-base md:text-xl max-w-md mx-auto md:mx-0 leading-relaxed font-sans"
+               th:text="${theme.config.HomeSettings.descriptionLeft} ?: '我是一名前端程序员，立志成为全栈高级工程师。在代码的宇宙中，寻找秩序与美感的平衡。'">
                 我是一名前端程序员，立志成为全栈高级工程师。<br>在代码的宇宙中，寻找秩序与美感的平衡。
             </p>
+            
+            <!-- 社交链接 - 动态生成 -->
             <div class="flex justify-center md:justify-start gap-4 pt-4">
-                <a href="#" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-lg md:text-xl text-gray-600 dark:text-gray-400 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300">
-                    <i class="ri-github-fill"></i>
-                </a>
-                <a href="#" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-lg md:text-xl text-gray-600 dark:text-gray-400 hover:bg-blue-400 hover:text-white transition-all duration-300">
-                    <i class="ri-twitter-x-line"></i>
-                </a>
-                <a href="#" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-lg md:text-xl text-gray-600 dark:text-gray-400 hover:bg-red-500 hover:text-white transition-all duration-300">
-                    <i class="ri-mail-send-line"></i>
+                <!-- 循环 home_links 配置 -->
+                <a th:each="link : ${theme.config.HomeSettings.home_links}"
+                   th:href="${link.home_links_url} ?: '#'"
+                   th:title="${link.value}"
+                   target="_blank"
+                   class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 dark:bg-darkCard flex items-center justify-center text-lg md:text-xl text-gray-600 dark:text-gray-400 hover:scale-110 transition-all duration-300">
+                    
+                    <!-- 根据类型显示不同图标 -->
+                    <i th:class="${
+                        link.value == 'github' ? 'ri-github-fill hover:text-black' :
+                        link.value == 'bilibili' ? 'ri-bilibili-fill hover:text-pink-500' :
+                        link.value == 'email' ? 'ri-mail-send-line hover:text-red-500' :
+                        link.value == 'gitee' ? 'ri-git-repository-fill hover:text-red-600' :
+                        link.value == 'weibo' ? 'ri-weibo-fill hover:text-orange-500' :
+                        link.value == 'zhihu' ? 'ri-zhihu-fill hover:text-blue-600' :
+                        link.value == 'weixin' ? 'ri-wechat-fill hover:text-green-500' :
+                        link.value == 'xiaohongshu' ? 'ri-book-mark-fill hover:text-red-500' :
+                        link.value == 'juejin' ? 'ri-code-box-fill hover:text-blue-500' :
+                        link.value == 'csdn' ? 'ri-article-fill hover:text-red-600' :
+                        'ri-link'
+                    }"></i>
+                    
+                    <!-- 如果是自定义图标 -->
+                    <img th:if="${link.value == 'custom' && link.custom_icon}"
+                         th:src="${link.custom_icon}"
+                         class="w-6 h-6"
+                         alt="custom icon">
                 </a>
             </div>
         </div>
+        
+        <!-- 右侧图片 -->
         <div class="w-full md:w-1/2 flex justify-center md:justify-end relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] md:w-[300px] h-[250px] md:h-[300px] bg-gradient-to-tr from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full blur-3xl -z-10 opacity-60"></div>
-            <img th:src="@{/assets/img/Azn.png}"
-            alt="Spaceman" class="w-[250px] md:w-[450px] object-contain animate-float drop-shadow-2xl">
+            
+            <!-- 使用配置的右侧封面图 -->
+            <img th:if="${theme.config.HomeSettings.RightCover}"
+                 th:src="${theme.config.HomeSettings.RightCover}"
+                 alt="Cover Image" 
+                 class="w-[250px] md:w-[450px] object-contain animate-float drop-shadow-2xl">
+            
+            <!-- 如果没有配置封面图，使用默认图 -->
+            <img th:unless="${theme.config.HomeSettings.RightCover}"
+                 th:src="${theme.config.HomeSettings.RightCover} ?: '/assets/img/Azn.png'"
+                 alt="Spaceman" 
+                 class="w-[250px] md:w-[450px] object-contain animate-float drop-shadow-2xl">
         </div>
     </section>
 </th:block>

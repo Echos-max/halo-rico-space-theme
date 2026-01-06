@@ -10,8 +10,8 @@ spec:
   homepage: https://github.com/yourusername/rico-space
   logo: "https://free.picui.cn/free/2026/01/05/695b6f50452b4.png"
   repo: ""
-  settingName: "theme-ricospace-settings"
-  configMapName: "theme-ricospace-settings-configMap"
+  settingName: "theme-ricospace-setting"
+  configMapName: "theme-ricospace-setting-configMap"
   version: 1.0.0
   require: ">=2.10.0"
   customTemplates:
@@ -31,4 +31,4 @@ spec:
       - name: projects
         description: 项目页
         screenshot: ""
-        file: projects.html
+        file: page.html

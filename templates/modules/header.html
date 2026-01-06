@@ -2,41 +2,67 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <header th:fragment="header" class="fixed top-0 left-0 w-full z-50 pointer-events-none">
-    <div class="max-w-7xl mx-auto px-6 h-20 md:h-24 flex items-center justify-between relative">
-        <!-- 桌面端菜单 -->
-        <nav th:with="menu = ${menuFinder.getPrimary()}" 
-             class="hidden md:flex pointer-events-auto absolute left-1/2 top-6 -translate-x-1/2 bg-white/80 dark:bg-darkCard/80 backdrop-blur-xl border border-white/40 dark:border-gray-700 shadow-lg shadow-gray-200/40 dark:shadow-black/20 rounded-full px-8 py-3 items-center gap-6 transition-all hover:shadow-xl hover:-translate-y-0.5">
-            
-            <a th:each="menuItem : ${menu.menuItems}"
-               th:href="@{${menuItem.status.href}}"
-               class="nav-item group relative flex items-center gap-1.5 text-sm transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
-                
-                <!-- 简单的图标，可以后续通过菜单项的自定义字段来指定 -->
-                <i class="ri-menu-line text-lg"></i>
-                
-                <span th:text="${menuItem.status.displayName}">菜单</span>
-                
-                <!-- 激活小圆点 -->
-                <span class="nav-dot absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-black dark:bg-white rounded-full opacity-0 transition-opacity duration-200"></span>
-            </a>
-        </nav>
+  <div class="max-w-7xl mx-auto px-6 h-20 md:h-24 flex items-center justify-between relative">
+    <!-- 桌面端菜单 -->
+    <nav th:with="menu = ${menuFinder.getPrimary()}"
+      class="hidden md:flex pointer-events-auto absolute left-1/2 top-6 -translate-x-1/2 bg-white/80 dark:bg-darkCard/80 backdrop-blur-xl border border-white/40 dark:border-gray-700 shadow-lg shadow-gray-200/40 dark:shadow-black/20 rounded-full px-8 py-3 items-center gap-6 transition-all hover:shadow-xl hover:-translate-y-0.5">
 
-        <!-- 右侧功能区 -->
-        <div class="pointer-events-auto flex items-center gap-3 md:gap-4 absolute right-6 top-5 md:top-6">
-            <button class="w-9 h-9 md:w-10 md:h-10dark:bg-darkCard rounded-full  dark:border-darkBorder flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition">
+      <a th:each="menuItem : ${menu.menuItems}" th:href="@{${menuItem.status.href}}"
+        class="nav-item group relative flex items-center gap-1.5 text-sm transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
+
+        <!-- 从元数据读取图标 -->
+        <i th:class="${#annotations.get(menuItem,'icon')}"></i>
+
+        <span th:text="${menuItem.status.displayName}">菜单</span>
+
+        <span
+          class="nav-dot absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-black dark:bg-white rounded-full opacity-0 transition-opacity duration-200"></span>
+      </a>
+    </nav>
+
+    <!-- 右侧功能区 -->
+    <div class="pointer-events-auto flex items-center gap-3 md:gap-4 absolute right-6 top-5 md:top-6">
+      <!-- 搜索按钮 -->
+      <!-- <button onclick="openSearch()" 
+                    class="w-9 h-9 md:w-10 md:h-10 bg-white dark:bg-darkCard rounded-full shadow-sm border border-gray-100 dark:border-darkBorder flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition">
                 <i class="ri-search-line"></i>
-            </button>
-            <button onclick="toggleDarkMode()" class="w-9 h-9 md:w-10 md:h-10  rounded-full dark:border-darkBorder flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition">
-                <i class="ri-moon-line dark:hidden"></i>
-                <i class="ri-sun-line hidden dark:block"></i>
-            </button>
-            <div class="w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden  dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rico" 
-                     alt="Avatar" 
-                     class="w-full h-full object-cover bg-gray-100">
-            </div>
-        </div>
+            </button> -->
+
+      <!-- 暗黑模式按钮 -->
+      <button onclick="toggleDarkMode()"
+        class="w-9 h-9 md:w-10 md:h-10  dark:bg-darkCard rounded-full shadow-sm   dark:border-darkBorder flex items-center justify-center transition">
+        <i class="ri-moon-line block dark:hidden text-gray-700"></i>
+        <i class="ri-sun-line hidden dark:block text-yellow-400"></i>
+      </button>
+
+      <!-- 头像按钮（带下拉菜单） -->
+      <div class="relative group">
+        <a href="/console" target="_blank" th:data-tooltip="${roleName == 'super-'?'登录':'去后台'}">
+          <th:block th:if="${roleName == 'super-'}">
+            <img th:src="@{/assets/img/default.jpg}"
+            alt="登录"
+              class="size-8 rounded-full shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:ring-white/10 dark:hover:ring-white/20" />
+          </th:block>
+          <th:block th:if="${roleName != 'super-'}">
+            <img th:if="${not #strings.isEmpty(contributor.avatar)}" th:src="${contributor.avatar}" alt="去后台"
+              class="size-8 rounded-full shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:ring-white/10 dark:hover:ring-white/20" />
+            <img th:if="${#strings.isEmpty(contributor.avatar)}" th:src="@{/assets/img/default.jpg}" alt="去后台"
+              class="size-8 rounded-full shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:ring-white/10 dark:hover:ring-white/20" />
+          </th:block>
+        </a>
+      </div>
     </div>
+  </div>
 </header>
+
+<!-- 搜索功能（可选） -->
+<script>
+  function openSearch() {
+    // 可以跳转到搜索页面
+    window.location.href = '/search';
+    // 或者打开搜索弹窗
+    // document.getElementById('search-modal').classList.remove('hidden');
+  }
+</script>
 
 </html>

@@ -13,7 +13,7 @@
       <div class="space-y-8 md:space-y-12 px-2">
         <!-- 这里可以接入 Halo 的瞬间/说说功能 -->
         <!-- 示例静态内容 -->
-        <div class="flex gap-4 items-start border-b border-gray-50 dark:border-gray-800 pb-8"
+        <div class="flex gap-4 items-start border-b border-gray-200 dark:border-gray-800 pb-8"
           th:each="moment : ${momentFinder.listAll()}" th:with="content = ${moment.spec.content}">
           <!-- 头像 -->
           <img th:src="${moment.owner.avatar}" class="w-10 h-10 rounded-lg bg-gray-100 shrink-0" th:alt="${site.title}">
@@ -24,25 +24,32 @@
             <div th:if="${not #strings.isEmpty(content.html)}" th:utext="${content.html}"
               class="text-gray-800 dark:text-gray-200 mt-1 mb-2 text-[15px]"></div>
             <!-- 图片展示、视频展示区域 -->
-            <div class="grid grid-gallery-4 gap-1 mb-2" id="MomentsCover">
-              <th:block th:if="${not #lists.isEmpty(content.medium)}" th:each="momentItem : ${content.medium}">
-                <img th:if="${momentItem.type.name == 'PHOTO'}" th:src="${momentItem.url}" />
-                <video th:if="${momentItem.type.name == 'VIDEO'}" th:src="${momentItem.url}"></video>
-                <audio th:if="${momentItem.type.name == 'AUDIO'}" th:src="${momentItem.url}" controls="true"></audio>
-              </th:block>
-            </div>
+<div class="flex flex-wrap gap-1 mb-2 w-full" id="MomentsCover">
+  <th:block th:if="${not #lists.isEmpty(content.medium)}" th:each="momentItem : ${content.medium}">
+    <div class="basis-[calc(33.333%-0.1667rem)] min-w-[calc(33.333%-0.1667rem)]">
+      <img class="w-full aspect-square object-cover" 
+           th:if="${momentItem.type.name == 'PHOTO'}" 
+           th:src="${momentItem.url}" />
+      
+      <video class="w-full aspect-square object-cover" 
+             th:if="${momentItem.type.name == 'VIDEO'}" 
+             th:src="${momentItem.url}"
+             controls></video>
+      
+      <audio class="w-full" 
+             th:if="${momentItem.type.name == 'AUDIO'}" 
+             th:src="${momentItem.url}" 
+             controls></audio>
+    </div>
+  </th:block>
+</div>
             <!-- 地址和时间 -->
             <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
               <div>
                 <span class="text-nickname mr-2">西安市 · 骡马市</span>
-                <span>11小时前</span>
+                <span th:text="${#dates.format(moment.spec.releaseTime, 'yyyy-MM-dd HH:mm')}">11小时前</span>
               </div>
-              <button class="bg-gray-50 dark:bg-darkCard px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
-                <i class="ri-more-fill"></i>
-              </button>
             </div>
-            <!-- 虚线~间隔线 -->
-             <div class="divide-y divide-gray-300"></div>
           </div>
         </div>
       </div>

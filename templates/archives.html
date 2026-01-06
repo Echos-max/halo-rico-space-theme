@@ -42,7 +42,7 @@
                         
                         <!-- 分类标签 -->
                         <div th:if="${post.categories != null && post.categories.size() > 0}" 
-                             class="absolute top-3 left-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg z-10"
+                             class="absolute top-3 left-3  text-gray-500 dark:text-white text-xs font-bold px-3 py-1.5 z-10"
                              th:text="${post.categories[0].spec.displayName}">
                             分类
                         </div>

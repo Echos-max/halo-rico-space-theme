@@ -68,7 +68,12 @@
     </style>
 </head>
 
-<body class="antialiased min-h-screen flex flex-col bg-[#f9f8f7] font-sans selection:bg-black selection:text-white dark:selection:bg-blue-500 dark:bg-darkBg dark:text-gray-200 transition-colors duration-300">
+<body 
+  th:classappend="${#authentication.name  != 'anonymousUser' ? ' logged-in' : ''}"
+    th:with="contributor = ${contributorFinder.getContributor(#authentication.name)},
+      roleNames = ${#annotations.get(contributor, 'rbac.authorization.halo.run/role-names')},
+      roleName= ${roleNames == '[]' ? 'super-' : #strings.substring(roleNames,2, #strings.length(roleNames) - 2) }"
+class="antialiased min-h-screen flex flex-col bg-[#f9f8f7] font-sans selection:bg-black selection:text-white dark:selection:bg-blue-500 dark:bg-darkBg dark:text-gray-200 transition-colors duration-300">
 
     <!-- 顶部导航 -->
     <th:block th:replace="~{modules/header :: header}" />
