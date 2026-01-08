@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{modules/layout :: html(content = ~{::content})}"
-  class="scroll-smooth">
+<html lang="zh-CN" 
+      xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{modules/layout :: html(content = ~{::content})}"
+      class="scroll-smooth">
 
 <th:block th:fragment="content">
   <section class="animate-fade-in">
@@ -10,50 +12,111 @@
     </div>
 
     <div class="max-w-2xl mx-auto p-0 md:p-8">
-      <div class="space-y-8 md:space-y-12 px-2">
-        <!-- 这里可以接入 Halo 的瞬间/说说功能 -->
-        <!-- 示例静态内容 -->
-        <div class="flex gap-4 items-start border-b border-gray-200 dark:border-gray-800 pb-8"
-          th:each="moment : ${momentFinder.listAll()}" th:with="content = ${moment.spec.content}">
-          <!-- 头像 -->
-          <img th:src="${moment.owner.avatar}" class="w-10 h-10 rounded-lg bg-gray-100 shrink-0" th:alt="${site.title}">
-          <div class="flex-grow">
-            <!-- 昵称 -->
-            <div class="text-nickname font-bold text-[15px] cursor-pointer" th:text="${moment.owner.displayName}">Rico Zhao</div>
-            <!-- 动态内容 -->
-            <div th:if="${not #strings.isEmpty(content.html)}" th:utext="${content.html}"
-              class="text-gray-800 dark:text-gray-200 mt-1 mb-2 text-[15px]"></div>
-            <!-- 图片展示、视频展示区域 -->
-<div class="flex flex-wrap gap-1 mb-2 w-full" id="MomentsCover">
-  <th:block th:if="${not #lists.isEmpty(content.medium)}" th:each="momentItem : ${content.medium}">
-    <div class="basis-[calc(33.333%-0.1667rem)] min-w-[calc(33.333%-0.1667rem)]">
-      <img class="w-full aspect-square object-cover" 
-           th:if="${momentItem.type.name == 'PHOTO'}" 
-           th:src="${momentItem.url}" />
-      
-      <video class="w-full aspect-square object-cover" 
-             th:if="${momentItem.type.name == 'VIDEO'}" 
-             th:src="${momentItem.url}"
-             controls></video>
-      
-      <audio class="w-full" 
-             th:if="${momentItem.type.name == 'AUDIO'}" 
-             th:src="${momentItem.url}" 
-             controls></audio>
-    </div>
-  </th:block>
-</div>
-            <!-- 地址和时间 -->
-            <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
-              <div>
-                <span class="text-nickname mr-2">西安市 · 骡马市</span>
-                <span th:text="${#dates.format(moment.spec.releaseTime, 'yyyy-MM-dd HH:mm')}">11小时前</span>
+      <!-- 使用 th:with 获取动态列表 -->
+      <th:block th:with="moments = ${momentFinder.listAll()}">
+        
+        <!-- 如果有动态，显示列表 -->
+        <div th:if="${not #lists.isEmpty(moments)}" class="space-y-8 md:space-y-12 px-2">
+          <div class="flex gap-4 items-start border-b border-gray-200 dark:border-gray-800 pb-8"
+               th:each="moment : ${moments}" 
+               th:with="content = ${moment.spec.content}">
+            
+            <!-- 头像 -->
+            <img th:src="${moment.owner.avatar}" 
+                 class="w-10 h-10 rounded-lg bg-gray-100 shrink-0" 
+                 th:alt="${moment.owner.displayName}">
+            
+            <div class="flex-grow">
+              <!-- 昵称 -->
+              <div class="text-nickname font-bold text-[15px] cursor-pointer" 
+                   th:text="${moment.owner.displayName}">
+                Rico Zhao
+              </div>
+              
+              <!-- 动态内容 -->
+              <div th:if="${not #strings.isEmpty(content.html)}" 
+                   th:utext="${content.html}"
+                   class="text-gray-800 dark:text-gray-200 mt-1 mb-2 text-[15px]">
+              </div>
+              
+              <!-- 图片展示、视频展示区域 -->
+              <div class="flex flex-wrap gap-1 mb-2 w-full" id="MomentsCover">
+                <th:block th:if="${not #lists.isEmpty(content.medium)}" 
+                          th:each="momentItem : ${content.medium}">
+                  <div class="basis-[calc(33.333%-0.1667rem)] min-w-[calc(33.333%-0.1667rem)]">
+                    <!-- 图片 -->
+                    <img class="w-full aspect-square object-cover rounded-sm" 
+                         th:if="${momentItem.type.name == 'PHOTO'}"
+                         th:src="${momentItem.url}" 
+                         alt="图片" />
+                    
+                    <!-- 视频 -->
+                    <video class="w-full aspect-square object-cover rounded-sm" 
+                           th:if="${momentItem.type.name == 'VIDEO'}"
+                           th:src="${momentItem.url}" 
+                           controls></video>
+                    
+                    <!-- 音频 -->
+                    <audio class="w-full" 
+                           th:if="${momentItem.type.name == 'AUDIO'}" 
+                           th:src="${momentItem.url}"
+                           controls></audio>
+                  </div>
+                </th:block>
+              </div>
+              
+              <!-- 地址和时间 -->
+              <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
+                <div>
+                  <!-- 地址（如果有） -->
+                  <span th:if="${moment.spec.location}" 
+                        class="text-nickname mr-2" 
+                        th:text="${moment.spec.location}">
+                    西安市 · 骡马市
+                  </span>
+                  
+                  <!-- 发布时间 -->
+                  <span th:text="${#dates.format(moment.spec.releaseTime, 'yyyy-MM-dd HH:mm')}">
+                    2025-01-04 12:00
+                  </span>
+                </div>
+                
+                <!-- 更多操作按钮 -->
+                <button class="bg-gray-50 dark:bg-darkCard px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                  <i class="ri-more-fill"></i>
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        <!-- 如果没有动态，显示空状态 -->
+        <div th:if="${#lists.isEmpty(moments)}" 
+             class="text-center py-20">
+          <div class="flex flex-col items-center justify-center">
+            <!-- 图标 -->
+            <i class="ri-chat-smile-2-line text-6xl md:text-7xl text-gray-300 dark:text-gray-600 mb-6"></i>
+            
+            <!-- 主标题 -->
+            <h3 class="text-2xl md:text-3xl font-bold text-gray-400 dark:text-gray-200 mb-2">
+              暂无动态
+            </h3>
+            
+            <!-- 副标题 -->
+            <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base mb-6">
+              还没有发布任何瞬间，快去分享你的生活吧
+            </p>
+            
+            <!-- 操作按钮（可选） -->
+            <a th:href="@{/console#/moments/write}" 
+               class="inline-flex items-center gap-2 px-6 py-3  hover:bg-blue-700 text-white  transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+              <i class="ri-add-line text-lg"></i>
+              <span>发布动态</span>
+            </a>
+          </div>
+        </div>
+
+      </th:block>
     </div>
   </section>
 </th:block>

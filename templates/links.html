@@ -1,75 +1,143 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{modules/layout :: html(content = ~{::content})}"
-  class="scroll-smooth">
+<html lang="zh-CN" 
+      xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{modules/layout :: html(content = ~{::content})}"
+      class="scroll-smooth">
+
 <th:block th:fragment="content">
-  <th:block th:each="group : ${groups}">
-
-    <!-- 
-        布局容器：
-        grid-cols-1: 手机单列
-        sm:grid-cols-2: 平板双列
-        lg:grid-cols-4: 大屏四列 (还原图片布局)
-        gap-x-6 gap-y-10: 间距控制
-    -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 w-full mb-12">
-
-        <!-- 
-            内层循环：遍历 links
-            th:if="${linkStat.index < 2}": 【关键】只展示前两个
-        -->
-        <a th:each="link, linkStat : ${group.links}" 
-           th:if="${linkStat.index < 2}"
-           th:href="${link.spec.url}" 
-           target="_blank"
-           class="group flex flex-col cursor-pointer block">
-
-            <!-- 1. 顶部元数据: - Category - ... (序号) -->
-            <div class="flex justify-between items-center text-[10px] text-gray-500 mb-2 font-mono tracking-wide">
-                <!-- 使用 group 的名称作为分类，例如 "- Web -" -->
-                <span th:text="${'- ' + group.spec.displayName + ' -'}">- Category -</span>
-                <!-- 模拟序号 (04x) -->
-                <span th:text="${'(04' + (8 - linkStat.index) + ')'}">(000)</span>
-            </div>
-
-            <!-- 2. 图片区域 -->
-            <div class="relative overflow-hidden rounded-lg mb-3 bg-gray-100">
-                <!-- aspect-[4/3] 强制图片比例为 4:3 -->
-                <img th:src="${link.spec.logo}" 
-                     th:alt="${link.spec.displayName}"
-                     class="w-full aspect-[4/3] object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" />
-            </div>
-
-            <!-- 3. 标题与图标 -->
-            <div class="flex items-start justify-between gap-2">
-                <div class="flex-1">
-                    <h3 class="text-sm font-bold text-gray-900 leading-snug mb-1">
-                        <!-- 蓝色推荐标签 (静态展示，如需动态可加 th:if) -->
-                        <span class="bg-[#3b82f6] text-white text-[10px] px-1.5 py-0.5 rounded font-normal leading-none inline-block align-middle mr-1 transform -translate-y-[1px]">
-                            推荐
-                        </span>
-                        <!-- 标题 -->
-                        <span th:text="${link.spec.displayName}" class="align-middle hover:text-blue-600 transition-colors">
-                            标题内容
-                        </span>
-                    </h3>
-                </div>
-                <!-- 右上角箭头图标 -->
-                <svg class="w-3 h-3 text-gray-400 flex-shrink-0 mt-1 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19L19 5M5 5h14v14"></path>
-                </svg>
-            </div>
-
-            <!-- 4. 描述文本 -->
-            <p th:text="${link.spec.description}" 
-               class="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">
-               描述内容...
-            </p>
-
-        </a>
-
+  <section class="animate-fade-in">
+    
+    <!-- 页面标题 -->
+    <div class="text-center mb-12 md:mb-16">
+      <h1 class="text-5xl md:text-6xl font-art text-gray-900 dark:text-white tracking-wider">项目</h1>
+      <p class="text-gray-400 text-xs md:text-sm mt-4 tracking-widest uppercase">Project</p>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">
+        发现更多优质内容
+      </p>
     </div>
 
-</th:block>
+    <!-- 友链内容 -->
+    <div class="max-w-7xl mx-auto px-4 md:px-6">
+      
+      <!-- 判断是否有友链 -->
+      <th:block th:if="${not #lists.isEmpty(groups)}">
+        
+        <!-- 循环分组 -->
+        <th:block th:each="group, groupStat : ${groups}">
+          
+          <!-- 分组标题 -->
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent"></div>
+              <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white px-4" 
+                  th:text="${group.spec.displayName}">
+                分组名称
+              </h2>
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent"></div>
+            </div>
+            
+            <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-8" 
+               th:if="${group.spec.description}"
+               th:text="${group.spec.description}">
+              分组描述
+            </p>
+          </div>
 
+          <!-- 友链网格 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 w-full mb-16">
+            
+            <!-- 循环友链 -->
+            <a th:each="link, linkStat : ${group.links}" 
+               th:href="${link.spec.url}" 
+               target="_blank"
+               rel="noopener noreferrer"
+               class="group flex flex-col cursor-pointer">
+
+              <!-- 顶部元数据 -->
+              <div class="flex justify-between items-center text-[10px] text-gray-500 dark:text-gray-400 mb-2 font-mono tracking-wide">
+                <span th:text="${'- ' + group.spec.displayName + ' -'}">- Category -</span>
+                <span th:text="${'(' + (linkStat.index + 1) + '/' + group.links.size() + ')'}">(1/10)</span>
+              </div>
+
+              <!-- 图片区域 -->
+              <div class="relative overflow-hidden rounded-lg mb-3 bg-gray-100 dark:bg-gray-800 shadow-md group-hover:shadow-xl transition-shadow duration-300">
+                <!-- 如果有 logo -->
+                <img th:if="${link.spec.logo}" 
+                     th:src="${link.spec.logo}" 
+                     th:alt="${link.spec.displayName}"
+                     class="w-full aspect-[4/3] object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" />
+                
+                <!-- 如果没有 logo，显示默认占位 -->
+                <div th:unless="${link.spec.logo}"
+                     class="w-full aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
+                  <i class="ri-links-line text-5xl text-gray-300 dark:text-gray-600"></i>
+                </div>
+              </div>
+
+              <!-- 标题与图标 -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1">
+                  <h3 class="text-sm font-bold text-gray-900 dark:text-white leading-snug mb-1">
+                    <!-- 推荐标签（可以根据条件显示） -->
+                    <span th:if="${link.spec.priority != null && link.spec.priority > 0}"
+                          class="bg-[#3b82f6] text-white text-[10px] px-1.5 py-0.5 rounded font-normal leading-none inline-block align-middle mr-1 transform -translate-y-[1px]">
+                      推荐
+                    </span>
+                    
+                    <!-- 标题 -->
+                    <span th:text="${link.spec.displayName}" 
+                          class="align-middle group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      标题内容
+                    </span>
+                  </h3>
+                </div>
+                
+                <!-- 箭头图标 -->
+                <svg class="w-3 h-3 text-gray-400 flex-shrink-0 mt-1 group-hover:text-blue-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" 
+                     fill="none" 
+                     stroke="currentColor" 
+                     viewBox="0 0 24 24">
+                  <path stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M5 19L19 5M5 5h14v14"></path>
+                </svg>
+              </div>
+
+              <!-- 描述文本 -->
+              <p th:text="${link.spec.description} ?: '暂无描述'" 
+                 class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed line-clamp-2">
+                描述内容...
+              </p>
+            </a>
+          </div>
+        </th:block>
+      </th:block>
+
+      <!-- 空状态 -->
+      <div th:if="${#lists.isEmpty(groups)}" 
+           class="text-center py-20">
+        <div class="flex flex-col items-center justify-center max-w-md mx-auto">
+          <!-- 图标 -->
+          <div class="relative mb-6">
+            <i class="ri-links-line text-7xl text-gray-300 dark:text-gray-600"></i>
+            <div class="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full animate-ping"></div>
+          </div>
+          
+          <!-- 主标题 -->
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-3">
+            暂无项目
+          </h3>
+          
+          <!-- 副标题 -->
+          <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base mb-8 leading-relaxed">
+            还没有添加任何项目<br>
+          </p>
+          
+        </div>
+      </div>
+
+    </div>
+  </section>
 </th:block>
 </html>

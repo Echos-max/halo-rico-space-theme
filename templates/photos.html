@@ -1,22 +1,43 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="~{modules/layout :: html(content = ~{::content})}"
-  class="scroll-smooth">
+<html lang="zh-CN" 
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{modules/layout :: html(content = ~{::content})}">
 
 <th:block th:fragment="content">
   <main class="px-6 md:px-16 pb-24">
-    <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-    <div class="text-center mb-12 md:mb-16">
-      <h2 class="text-5xl md:text-6xl font-art text-gray-900 dark:text-white tracking-wider">图库</h2>
-      <p class="text-gray-400 text-xs md:text-sm mt-4 tracking-widest uppercase">PHOTOS</p>
-    </div>
-      <!-- Thymeleaf 循环 -->
-      <div th:each="photo : ${photoFinder.listAll()}"
-        class="group relative break-inside-avoid cursor-zoom-in overflow-hidden rounded-sm" 
-        id="alumCovers"
-        >
-        <img th:src="${photo.spec.url}" th:alt="${photo.spec.displayName}" loading="lazy"
-          class="w-full block transform transition-all duration-700 ease-out grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105">
+    <!-- 主容器：改为垂直布局 -->
+    <div class="flex flex-col items-center space-y-8">
+
+      <!-- 标题区域 -->
+      <div class="text-center">
+        <h2 class="text-5xl md:text-6xl font-art text-gray-900 dark:text-white tracking-wider">图库</h2>
+        <p class="text-gray-400 text-xs md:text-sm mt-4 tracking-widest uppercase">PHOTOS</p>
       </div>
+
+      <!-- 图片或空状态 -->
+      <th:block th:with="photos = ${photoFinder.listAll()}">
+        <!-- 如果有图片 -->
+        <div th:if="${not #lists.isEmpty(photos)}" class="w-full max-w-3xl">
+          <img th:src="${photos.spec.url}"
+               th:alt="${photos.spec.displayName}"
+               loading="lazy"
+               class="w-full h-auto block rounded-sm shadow-md transform transition-all duration-700 ease-out grayscale-[20%] hover:grayscale-0 hover:scale-[1.02]" />
+        </div>
+
+        <!-- 如果没有图片 -->
+        <div th:if="${#lists.isEmpty(photos)}" class="text-center py-16 w-full max-w-2xl">
+          <div class="flex flex-col items-center justify-center">
+           <i class="ri-image-line text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+            <h3 class="text-2xl md:text-3xl font-bold text-gray-400 dark:text-gray-200 mb-2">
+              暂无动态
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base">
+              还没有发布任何图片，快去分享你的生活瞬间吧
+            </p>
+          </div>
+        </div>
+      </th:block>
+
     </div>
   </main>
 </th:block>
